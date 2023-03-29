@@ -1,0 +1,73 @@
+*{
+    margin: 0;
+    box-sizing: border-box;
+}
+.main{
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-image {
+    background-image: url("../../../../images/WhatsApp\ Image\ 2023-01-07\ at\ 3.28.12\ PM.jpeg"); /* The image used */
+    background-color: #cccccc; /* Used if the image is unavailable */
+    height: 500px; /* You must set a specified height */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+  }
+
+.cover{
+    background-color: white;
+    width: 30em;
+    height: 35em;
+    position: relative;
+    border-radius: 1em;
+    box-shadow: 0 0.188em 1.550em rgb(100,156,156);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.number-display{
+    align-items: center;
+    justify-content: center;
+}
+
+input{
+    border: none;
+    background-color: rgb(229,226,226);
+    height: 4em;
+    width: 80%;
+    border-radius: 0.25em;
+    text-align: center;
+    padding: 2em;
+}
+input:focus{
+    outline-color: goldenrod;
+}
+
+.send-btn{
+    width: 100%;
+    height: 3em;
+    background-color: goldenrod;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+    border-radius: 0.25em;
+    cursor: pointer;
+}
+
+.send-btn:hover{
+    transform: scale(1.25);
+    background-color: goldenrod;
+}
+
+.already-an-account{
+    display: flex;
+    gap: 0.1em;
+}

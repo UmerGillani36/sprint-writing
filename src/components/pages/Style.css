@@ -1,0 +1,60 @@
+.page {
+    background-image: url('../../images/bg.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+  }
+
+  .tab {
+    cursor: pointer;
+    padding: 10px;
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .tab.active {
+    color: #948323;
+  }
+
+  .prog{
+    
+    margin-left: 8%;
+    margin-top: 4%;
+    margin-bottom: 4%;
+    margin-right: 8%;
+    color: rgb(179, 138, 27);
+    
+
+  }
+  .container {
+    margin-top: 100px;
+  }
+  
+  .card {
+    margin: 20px;
+  }
+  
+  .description {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .author,
+  .genre {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+  .create-chapter-btn {
+    margin: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #008CBA;
+    color: #FFF;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .create-chapter-btn:hover {
+    background-color: #0077B5;
+  }
