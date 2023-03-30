@@ -291,7 +291,10 @@ const Sprint = () => {
                 />
               </div>
               <ReactQuill
-                style={{ backgroundColor: "#fff", height: "calc(100% - 60px)" }}
+                style={{
+                  backgroundColor: "#fff",
+                  height: "calc(100% - 90px)",
+                }}
                 value={editorState}
                 onChange={handleEditorChange}
               />
