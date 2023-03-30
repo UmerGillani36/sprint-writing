@@ -244,11 +244,23 @@ const Sprint = () => {
             </div>
             <Grid item xs={12} md={8}>
               <div
-                style={{ position: "relative", display: "flex", width: "100%" }}
+                style={{
+                  position: "relative",
+                  display: "flex",
+                  width: "100%",
+                  alignItems: "center",
+                  paddingBottom: 20,
+                }}
               >
-                <div style={{ display: "flex", width: "100%" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    width: "100%",
+                    alignItems: "center",
+                  }}
+                >
                   <TextField
-                    variant="standard"
+                    variant="filled"
                     label="Time (in minutes)"
                     type="number"
                     inputProps={{ min: "1", step: "1" }}
@@ -261,7 +273,7 @@ const Sprint = () => {
                   />
                   <Button
                     variant="contained"
-                    size="small"
+                    size="large"
                     sx={{ boxSizing: "content-box" }}
                     onClick={startTimerButton}
                   >
@@ -269,7 +281,7 @@ const Sprint = () => {
                   </Button>
                 </div>
                 <TextField
-                  variant="standard"
+                  variant="filled"
                   fullWidth
                   id="title"
                   label={chapterTitle ? "" : "Novel Title"}
