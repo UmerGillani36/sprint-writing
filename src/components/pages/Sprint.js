@@ -29,7 +29,7 @@ const Sprint = () => {
   const [editorState, setEditorState] = useState("");
   const [docRef, setDocRef] = useState(null);
   const [chapterTitle, setChapterTitle] = useState("");
-
+  console.log("text", editorState);
   useEffect(() => {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
@@ -84,7 +84,7 @@ const Sprint = () => {
                 borderRadius: "50%",
                 // border: "6px soli/d linear-gradient(#e66464, #9198e5)",
                 margin: "50px",
-                background: "linear-gradient(#e66464, #9198e5)",
+                background: "linear-gradient(white, #9198e5)",
                 padding: 10,
               }}
             >
@@ -93,7 +93,7 @@ const Sprint = () => {
                   width: "140px",
                   height: "140px",
                   borderRadius: "50%",
-                  background: "rgba(0,0,0,0.5)",
+                  background: "#a67843",
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -103,10 +103,10 @@ const Sprint = () => {
                   style={{
                     color: "white",
                     fontWeight: "bold",
-                    fontSize: "28px",
+                    fontSize: "32px",
                   }}
                 >
-                  00:59
+                  13:00:59
                 </span>
               </div>
             </div>

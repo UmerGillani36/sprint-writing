@@ -69,10 +69,6 @@ const Progress = () => {
                       style={{
                         width: "100%",
                         height: "70vh",
-
-                        // background: "white",
-                        // borderRadius: "10px",
-                        // padding: "20px",
                       }}
                     >
                       <TableContainer
