@@ -1,4 +1,4 @@
-import { Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
@@ -62,6 +62,22 @@ const Sprint = () => {
     }
   };
 
+  const handleDownload = () => {
+    console.log("Not completed");
+    // using Java Script method to get PDF file
+    // fetch("SamplePDF.pdf").then((response) => {
+    //   response.blob().then((blob) => {
+    //     // Creating new object of PDF file
+    //     const fileURL = window.URL.createObjectURL(blob);
+    //     // Setting various property values
+    //     let alink = document.createElement("a");
+    //     alink.href = fileURL;
+    //     alink.download = "SamplePDF.pdf";
+    //     alink.click();
+    //   });
+    // });
+  };
+
   return (
     <>
       {user ? (
@@ -79,35 +95,71 @@ const Sprint = () => {
           >
             <div
               style={{
-                width: "160px",
-                height: "160px",
-                borderRadius: "50%",
-                // border: "6px soli/d linear-gradient(#e66464, #9198e5)",
-                margin: "50px",
-                background: "linear-gradient(white, #9198e5)",
-                padding: 10,
+                height: "80%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}
             >
               <div
                 style={{
-                  width: "140px",
-                  height: "140px",
+                  width: "160px",
+                  height: "160px",
                   borderRadius: "50%",
-                  background: "#a67843",
+                  // border: "6px soli/d linear-gradient(#e66464, #9198e5)",
+                  margin: "50px",
+                  background: "linear-gradient(white, #9198e5)",
+                  padding: 10,
+                }}
+              >
+                <div
+                  style={{
+                    width: "140px",
+                    height: "140px",
+                    borderRadius: "50%",
+                    background: "#a67843",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <span
+                    style={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "32px",
+                    }}
+                  >
+                    00:00:59
+                  </span>
+                </div>
+              </div>
+              <div
+                style={{
                   display: "flex",
-                  justifyContent: "center",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
                   alignItems: "center",
                 }}
               >
-                <span
+                <h6
                   style={{
-                    color: "white",
-                    fontWeight: "bold",
-                    fontSize: "32px",
+                    width: "100%",
+                    wordBreak: "break-word",
+                    margin: "0px 0px 10px 0px",
                   }}
                 >
-                  13:00:59
-                </span>
+                  Download the novel by clicking
+                </h6>
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ width: "60%" }}
+                  onClick={handleDownload}
+                >
+                  Download
+                </Button>
               </div>
             </div>
             <Grid item xs={12} md={8}>
