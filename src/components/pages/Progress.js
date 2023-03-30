@@ -6,7 +6,7 @@ import {
   Label,
   Drawer,
 } from "@mui/material";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Row } from "react-grid-system";
 import { Navigate, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar";
@@ -22,24 +22,33 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
+import {
+  collection,
+  onSnapshot,
+  doc,
+  deleteDoc,
+  getDocs,
+} from "firebase/firestore";
+import { auth, dbFireStore } from "../pages/auth/Firebase";
 // import ProgressBar from 'react-bootstrap/ProgressBar';
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+// function createData(name, words, time, date) {
+//   return { name, words, time, date };
+// }
 
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24),
-  createData("Ice cream sandwich", 237, 9.0, 37),
-  createData("Eclair", 262, 16.0, 24),
-  createData("Cupcake", 305, 3.7, 67),
-  createData("Gingerbread", 356, 16.0, 49),
-  createData("Gingerbread", 356, 16.0, 49),
-  createData("Gingerbread", 356, 16.0, 49),
-  createData("Gingerbread", 356, 16.0, 49),
-  createData("Gingerbread", 356, 16.0, 49),
-  createData("Gingerbread", 356, 16.0, 49),
-];
+const firebaseConfig = {
+  apiKey: "AIzaSyDDQSIPDECt9fwPSWYwvXO_6V4CI-tsLNg",
+  authDomain: "writo-525e8.firebaseapp.com",
+  databaseURL: "https://writo-525e8-default-rtdb.firebaseio.com",
+  projectId: "writo-525e8",
+  storageBucket: "writo-525e8.appspot.com",
+  messagingSenderId: "38396057848",
+  appId: "1:38396057848:web:c3f76e6fa268d3cf0d830d",
+};
+
 const Progress = () => {
+  const [rows, setRows] = useState([]);
   const navigate = useNavigate();
   const handleLogout = () => {
     navigate("/login");
@@ -50,6 +59,26 @@ const Progress = () => {
     fontWeight: "bold",
     fontSize: 18,
   };
+
+  useEffect(() => {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    async function getNovels() {
+      const db = firebase.firestore();
+      const novels = [];
+      const querySnapshot = await getDocs(collection(db, "novels"));
+      querySnapshot.forEach((doc) => {
+        novels.push({ id: doc.id, ...doc.data() });
+      });
+      setRows(novels);
+    }
+    getNovels();
+  }, []);
+
+  // useEffect(() => {
+
+  // }, []);
   return (
     <>
       {user ? (
@@ -108,13 +137,16 @@ const Progress = () => {
                                 }}
                               >
                                 <TableCell component="th" scope="row">
-                                  {row.name}
+                                  {row.novelName}
                                 </TableCell>
+                                <TableCell align="right">{row.words}</TableCell>
+                                <TableCell align="right">{row.time}</TableCell>
                                 <TableCell align="right">
-                                  {row.calories}
+                                  {console.log(row.date)}
+                                  {new Date(
+                                    row?.date?.seconds * 1000
+                                  ).toLocaleString()}
                                 </TableCell>
-                                <TableCell align="right">{row.fat}</TableCell>
-                                <TableCell align="right">{row.carbs}</TableCell>
                               </TableRow>
                             ))}
                           </TableBody>

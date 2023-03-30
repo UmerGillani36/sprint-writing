@@ -29,6 +29,10 @@ const Sprint = () => {
   const [editorState, setEditorState] = useState("");
   const [docRef, setDocRef] = useState(null);
   const [chapterTitle, setChapterTitle] = useState("");
+  const [time, setTime] = useState(0);
+  const [timer, setTimer] = useState(0);
+  const [totalTime, setTotalTime] = useState(0);
+  const [startTimer, setStartTimer] = useState(false);
   console.log("text", editorState);
   useEffect(() => {
     if (!firebase.apps.length) {
@@ -49,9 +53,18 @@ const Sprint = () => {
   }, [user]);
 
   const handleEditorChange = (content, delta, source, editor) => {
-    setEditorState(content);
-    if (docRef) {
-      docRef.set({ content, chapterTitle });
+    if (chapterTitle.trim().length !== 0) {
+      if (timer !== 0) {
+        setStartTimer(true);
+        setEditorState(content);
+        if (docRef) {
+          docRef.set({ content, chapterTitle });
+        }
+      } else {
+        alert("Please Set Time First");
+      }
+    } else {
+      alert("Please Enter Novel Title");
     }
   };
 
@@ -61,6 +74,69 @@ const Sprint = () => {
       docRef.set({ content: editorState, chapterTitle: event.target.value });
     }
   };
+
+  useEffect(() => {
+    if (startTimer) {
+      let intervalId;
+
+      if (timer > 0) {
+        intervalId = setInterval(() => {
+          setTimer((prevTime) => prevTime - 1);
+        }, 1000);
+      } else {
+        // Call the Save function when timer reaches 0
+        Save();
+      }
+
+      return () => clearInterval(intervalId);
+    }
+  }, [timer, startTimer]);
+
+  const startTimerButton = () => {
+    setStartTimer(true);
+    setTotalTime(time);
+    setTime(0);
+  };
+
+  function Save() {
+    // clearInterval(timer);
+    const db = firebase.firestore();
+    const writersRef = db.collection("writers");
+    const wordCount = editorState.trim().split(/\s+/).length;
+    writersRef
+      .add({
+        id: user.uid,
+        date: new Date(),
+        time: totalTime,
+        words: wordCount,
+        data: editorState,
+      })
+      .then((docRef) => {
+        const novelsRef = db.collection("novels");
+        novelsRef
+          .add({
+            id: docRef.id,
+            date: new Date(),
+            time: totalTime,
+            words: wordCount,
+            data: editorState,
+            novelName: chapterTitle,
+            author: user.uid,
+          })
+          .then(() => {
+            console.log("Novel added successfully");
+            setTimer(0);
+            setChapterTitle("");
+            setEditorState("");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 
   const handleDownload = () => {
     console.log("Not completed");
@@ -102,39 +178,43 @@ const Sprint = () => {
                 alignItems: "center",
               }}
             >
-              <div
-                style={{
-                  width: "160px",
-                  height: "160px",
-                  borderRadius: "50%",
-                  // border: "6px soli/d linear-gradient(#e66464, #9198e5)",
-                  margin: "50px",
-                  background: "linear-gradient(white, #9198e5)",
-                  padding: 10,
-                }}
-              >
+              {startTimer && (
                 <div
                   style={{
-                    width: "140px",
-                    height: "140px",
+                    width: "160px",
+                    height: "160px",
                     borderRadius: "50%",
-                    background: "#a67843",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    margin: "50px",
+                    background: "linear-gradient(white, #9198e5)",
+                    padding: 10,
                   }}
                 >
-                  <span
+                  <div
                     style={{
-                      color: "white",
-                      fontWeight: "bold",
-                      fontSize: "32px",
+                      width: "140px",
+                      height: "140px",
+                      borderRadius: "50%",
+                      background: "#a67843",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
-                    00:00:59
-                  </span>
+                    <span
+                      style={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: "32px",
+                      }}
+                    >
+                      {Math.floor(timer / 60)
+                        .toString()
+                        .padStart(2, "0")}
+                      :{(timer % 60).toString().padStart(2, "0")}
+                    </span>
+                  </div>
                 </div>
-              </div>
+              )}
               <div
                 style={{
                   display: "flex",
@@ -163,27 +243,39 @@ const Sprint = () => {
               </div>
             </div>
             <Grid item xs={12} md={8}>
-              <div style={{ position: "relative", display: "inline-block" }}>
+              <div
+                style={{ position: "relative", display: "flex", width: "100%" }}
+              >
+                <div style={{ display: "flex", width: "100%" }}>
+                  <TextField
+                    variant="standard"
+                    label="Time (in minutes)"
+                    type="number"
+                    inputProps={{ min: "1", step: "1" }}
+                    value={time}
+                    onChange={(event) => {
+                      setTime(event.target.value);
+                      setTimer(event.target.value * 60);
+                    }}
+                    sx={{ width: "200px", marginRight: "20px" }}
+                  />
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{ boxSizing: "content-box" }}
+                    onClick={startTimerButton}
+                  >
+                    Start
+                  </Button>
+                </div>
                 <TextField
                   variant="standard"
                   fullWidth
                   id="title"
-                  label={chapterTitle ? "" : "Chapter Title"}
+                  label={chapterTitle ? "" : "Novel Title"}
                   name="title"
                   value={chapterTitle}
                   onChange={handleTitleChange}
-                  sx={{
-                    position: "absolute",
-                    top: -25,
-                    left: 0,
-
-                    backgroundColor: "#fff",
-                    width: `${chapterTitle.length * 15}px`,
-                    borderTopLeftRadius: "8px",
-                    borderTopRightRadius: "8px",
-                    zIndex: 1,
-                    fontWeight: "bold",
-                  }}
                 />
               </div>
               <ReactQuill
@@ -191,6 +283,27 @@ const Sprint = () => {
                 value={editorState}
                 onChange={handleEditorChange}
               />
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ marginTop: 1 }}
+                  onClick={() => {
+                    Save();
+                    setTimer(0);
+                    setChapterTitle("");
+                    setEditorState("");
+                  }}
+                >
+                  Submit
+                </Button>
+              </div>
             </Grid>
           </Grid>
           <Outlet />
