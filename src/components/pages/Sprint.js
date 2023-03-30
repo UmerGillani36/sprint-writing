@@ -8,8 +8,14 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import { convert } from "html-to-text";
+import { saveAs } from "file-saver";
 import { collection, onSnapshot, doc, deleteDoc } from "firebase/firestore";
 import { auth, dbFireStore } from "../pages/auth/Firebase";
+
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 const firebaseConfig = {
   apiKey: "AIzaSyDDQSIPDECt9fwPSWYwvXO_6V4CI-tsLNg",
@@ -33,7 +39,6 @@ const Sprint = () => {
   const [timer, setTimer] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
-  console.log("text", editorState);
   useEffect(() => {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
@@ -138,20 +143,103 @@ const Sprint = () => {
       });
   }
 
-  const handleDownload = () => {
-    console.log("Not completed");
-    // using Java Script method to get PDF file
-    // fetch("SamplePDF.pdf").then((response) => {
-    //   response.blob().then((blob) => {
-    //     // Creating new object of PDF file
-    //     const fileURL = window.URL.createObjectURL(blob);
-    //     // Setting various property values
-    //     let alink = document.createElement("a");
-    //     alink.href = fileURL;
-    //     alink.download = "SamplePDF.pdf";
-    //     alink.click();
+  const handleDownload = (html) => {
+    console.log("Download Called: ", html);
+    const text = convert(html, {
+      wordwrap: false,
+      ignoreHref: true,
+      ignoreImage: true,
+      preserveNewlines: true,
+      uppercaseHeadings: false,
+    });
+
+    const documentDefinition = {
+      content: [
+        {
+          layout: "noBorders",
+          table: {
+            widths: ["*"],
+            body: [
+              [
+                {
+                  text: text,
+                  fontSize: 14,
+                  alignment: "left",
+                },
+              ],
+            ],
+          },
+        },
+      ],
+    };
+    const pdfDocGenerator = pdfMake.createPdf(documentDefinition);
+    pdfDocGenerator.getBlob((blob) => {
+      saveAs(blob, "document.pdf");
+    });
+  };
+
+  // function htmlToParagraphs(htmlContent) {
+  //   const div = document.createElement("div");
+  //   div.innerHTML = htmlContent;
+  //   const paragraphs = [];
+
+  //   for (let i = 0; i < div.childNodes.length; i++) {
+  //     const node = div.childNodes[i];
+  //     if (node.nodeName === "P") {
+  //       const text = node.textContent.trim();
+  //       if (text) {
+  //         paragraphs.push(text);
+  //       }
+  //     }
+  //   }
+
+  //   return paragraphs;
+  // }
+
+  // function createWordDocument(htmlContent) {
+  //   const paragraphs = htmlToParagraphs(htmlContent);
+  //   const doc = new Document();
+
+  //   paragraphs.forEach((text) => {
+  //     const paragraph = new Paragraph(text);
+  //     doc.addParagraph(paragraph);
+  //   });
+
+  //   return doc;
+  // }
+
+  const handleDownloadWord = (html) => {
+    console.log("Download Called: ", html);
+    // const doc = createWordDocument(html);
+    // const buffer = doc.generate();
+    // const blob = new Blob([buffer], {
+    //   type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    // });
+    // saveAs(blob, `${fileName}.docx`);
+    // const doc = new Document();
+
+    // // Split the HTML content into paragraphs
+    // const paragraphs = html.split("<p>").map((p) => p.replace("</p>", ""));
+
+    // // Add each paragraph to the Word document
+    // paragraphs.forEach((p) => {
+    //   doc.addSection({
+    //     properties: {},
+    //     children: [
+    //       new Paragraph({
+    //         text: p,
+    //         style: "default",
+    //       }),
+    //     ],
     //   });
     // });
+
+    // // Generate the Word document and download it
+    // Packer.toBlob(doc).then((blob) => {
+    //   saveAs(blob, "document.docx");
+    // });
+    // const convertedDoc = HtmlDocx.asBlob(html);
+    // saveAs(convertedDoc, "document.docx");
   };
 
   return (
@@ -236,10 +324,18 @@ const Sprint = () => {
                   variant="contained"
                   size="small"
                   sx={{ width: "60%" }}
-                  onClick={handleDownload}
+                  onClick={() => handleDownload(editorState)}
                 >
-                  Download
+                  Download PDF
                 </Button>
+                {/* <Button
+                  variant="contained"
+                  size="small"
+                  sx={{ width: "60%" }}
+                  onClick={() => handleDownloadWord(editorState)}
+                >
+                  Download Word
+                </Button> */}
               </div>
             </div>
             <Grid item xs={12} md={8}>
