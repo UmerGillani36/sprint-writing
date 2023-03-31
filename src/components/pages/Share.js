@@ -91,35 +91,32 @@ const Share = (props) => {
         let obj = {};
         let user = false;
         novels.forEach((value) => {
-          if (
-            value.id === selectedNovel &&
-            !value?.contributors?.includes(selectedFriend)
-          ) {
+          if (value.id === selectedNovel) {
             console.log("True True");
             obj = {
               ...value,
               contributors: [...value?.contributors, selectedFriend],
             };
-            user = true;
-            return 1;
+            // user = true;
+            // return 1;
           } else {
-            user = false;
+            // user = false;
           }
         });
-        if (user) {
-          editNovel(selectedNovel, obj)
-            .then((message) => {
-              console.log(message);
-              setSelectedNovel("none");
-              setSelectedFriend("none");
-              return;
-            })
-            .catch((error) => {
-              console.error(error);
-            });
-        } else {
-          alert("User already exist in selected novel");
-        }
+        // if (user) {
+        editNovel(selectedNovel, obj)
+          .then((message) => {
+            console.log(message);
+            setSelectedNovel("none");
+            setSelectedFriend("none");
+            return;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+        // } else {
+        // alert("User already exist in selected novel");
+        // }
       } else {
         alert("Please Select a friend you want to add in the novel");
       }
