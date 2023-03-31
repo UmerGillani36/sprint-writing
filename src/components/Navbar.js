@@ -1,23 +1,22 @@
 import { async } from "@firebase/util";
 import { AppBar, Paper, Box, Toolbar, Typography, Button } from "@mui/material";
 import { brown } from "@mui/material/colors";
-import React,{useContext} from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
-import { auth ,dbFireStore} from "./pages/auth/Firebase";
+import { auth, dbFireStore } from "./pages/auth/Firebase";
 import { signOut } from "firebase/auth";
-import { updateDoc,doc } from "firebase/firestore";
+import { updateDoc, doc } from "firebase/firestore";
 import LoginForm from "./pages/auth/Login/LoginForm";
 import { AuthContext } from "./pages/auth";
 const secondary = brown[400];
 const Navbar = () => {
-
-  const {user} = useContext(AuthContext);
-  const handleLogout = async () =>{
-    await updateDoc(doc(dbFireStore,"users",user.uid),{
-      isOnline:false,
-    })
+  const { user } = useContext(AuthContext);
+  const handleLogout = async () => {
+    await updateDoc(doc(dbFireStore, "users", user.uid), {
+      isOnline: false,
+    });
     await signOut(auth);
-  }
+  };
 
   return (
     <>
@@ -86,7 +85,7 @@ const Navbar = () => {
                   </Button>
                   <Button
                     component={NavLink}
-                    to="/contact"
+                    to="/share"
                     style={({ isActive }) => {
                       return { backgroundColor: isActive ? "#896130" : "" };
                     }}
@@ -94,32 +93,33 @@ const Navbar = () => {
                   >
                     Share
                   </Button>
-                  {user ? 
-                  <>
-                  <Button
-                     component={NavLink}
-                     to="/"
-                    sx={{ color: "white", textTransform: "none" }}
-                    Logout
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </Button>
-                  </>:
-                  <>
-                  <Button
-                    component={NavLink}
-                    to="/login"
-                    style={({ isActive }) => {
-                      return { backgroundColor: isActive ? "#896130" : "" };
-                    }}
-                    sx={{ color: "white", textTransform: "none" }}
-                    Logout
-                  >
-                    Login/Register
-                  </Button>
-                  </>}
-                  
+                  {user ? (
+                    <>
+                      <Button
+                        component={NavLink}
+                        to="/"
+                        sx={{ color: "white", textTransform: "none" }}
+                        Logout
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        component={NavLink}
+                        to="/login"
+                        style={({ isActive }) => {
+                          return { backgroundColor: isActive ? "#896130" : "" };
+                        }}
+                        sx={{ color: "white", textTransform: "none" }}
+                        Logout
+                      >
+                        Login/Register
+                      </Button>
+                    </>
+                  )}
                 </Toolbar>
               </AppBar>
             </Box>

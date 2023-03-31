@@ -23,6 +23,7 @@ import PrivateRoute from "./components/pages/PrivateRoute";
 import ProtectedRoute from "./components/pages/ProtectedRoute";
 import Profile from "./components/pages/Profile";
 import NovelPage from "./components/pages/NovelPage";
+import Share from "./components/pages/Share";
 
 function App() {
   return (
@@ -32,19 +33,23 @@ function App() {
           <Routes>
             <Route index element={<LoginForm />} />
             {/* <Route path="/" element={<Layout />}> */}
-              {/* <Route index element={<LoginForm />} /> */}
-              <Route path="login" element={<LoginReg />} />
-              <Route path="sendpasswordresetemail" element={<SendPasswordResetEmail />}/>
-              <Route path="reset" element={<ResetPasswordForm />} />
+            {/* <Route index element={<LoginForm />} /> */}
+            <Route path="login" element={<LoginReg />} />
+            <Route
+              path="sendpasswordresetemail"
+              element={<SendPasswordResetEmail />}
+            />
+            <Route path="reset" element={<ResetPasswordForm />} />
             {/* </Route> */}
             <Route path="/changepassword" element={<ChangePassword />} />
             {/* <Route element={<PrivateRoute />}> */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/novel" element={<Novel />} />
-              <Route path="/sprint" element={<Sprint />} />
-              <Route path="/progress" element={<Progress />} />
-              <Route path="/chat" element={<Talk />} />
-              <Route path="/profile" element={<Profile />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/novel" element={<Novel />} />
+            <Route path="/sprint" element={<Sprint />} />
+            <Route path="/progress" element={<Progress />} />
+            <Route path="/chat" element={<Talk />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/share" element={<Share />} />
             {/* </Route> */}
             <Route path="/loginform" element={<LoginForm />} />
             <Route path="/signupform" element={<SignupForm />} />
