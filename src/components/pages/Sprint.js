@@ -1,6 +1,6 @@
 import { Button, Grid, TextField } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../Navbar";
 import { Outlet } from "react-router-dom";
 import { AuthContext } from "./auth";
@@ -14,6 +14,7 @@ import { convert } from "html-to-text";
 import { saveAs } from "file-saver";
 import { collection, onSnapshot, doc, deleteDoc } from "firebase/firestore";
 import { auth, dbFireStore } from "../pages/auth/Firebase";
+import { useLayoutEffect } from "react";
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
@@ -28,6 +29,7 @@ const firebaseConfig = {
 };
 const Sprint = () => {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const { user } = useContext(AuthContext);
   const handleLogout = () => {
     navigate("/login");
@@ -39,23 +41,32 @@ const Sprint = () => {
   const [timer, setTimer] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
   const [startTimer, setStartTimer] = useState(false);
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
 
-    if (user) {
-      const db = firebase.firestore();
-      const docRef = db.collection("arhamdoc").doc(user.uid);
-      setDocRef(docRef);
-      docRef.get().then((doc) => {
-        if (doc.exists) {
-          setEditorState(doc.data().content);
-          setChapterTitle(doc.data().chapterTitle);
-        }
-      });
-    }
+    // if (user) {
+    //   const db = firebase.firestore();
+    //   const docRef = db.collection("arhamdoc").doc(user.uid);
+    //   setDocRef(docRef);
+    //   docRef.get().then((doc) => {
+    //     if (doc.exists) {
+    //       setEditorState(doc.data().content);
+    //       setChapterTitle(doc.data().chapterTitle);
+    //     }
+    //   });
+    // }
   }, [user]);
+
+  useLayoutEffect(() => {
+    console.log("Navigate data: ", state);
+    if (state) {
+      setChapterTitle(state.novelName);
+      setEditorState(state.data);
+    }
+  }, []);
 
   const handleEditorChange = (content, delta, source, editor) => {
     if (chapterTitle.trim().length !== 0) {
@@ -105,42 +116,52 @@ const Sprint = () => {
 
   function Save() {
     // clearInterval(timer);
-    const db = firebase.firestore();
-    const writersRef = db.collection("writers");
-    const wordCount = editorState.trim().split(/\s+/).length;
-    writersRef
-      .add({
-        id: user.uid,
-        date: new Date(),
-        time: totalTime,
-        words: wordCount,
-        data: editorState,
-      })
-      .then((docRef) => {
-        const novelsRef = db.collection("novels");
-        novelsRef
-          .add({
-            id: docRef.id,
-            date: new Date(),
-            time: totalTime,
-            words: wordCount,
-            data: editorState,
-            novelName: chapterTitle,
-            author: user.uid,
-          })
-          .then(() => {
-            console.log("Novel added successfully");
-            setTimer(0);
-            setChapterTitle("");
-            setEditorState("");
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    if (!loading) {
+      setLoading(true);
+      const db = firebase.firestore();
+      const writersRef = db.collection("writers");
+      const wordCount = editorState.trim().split(/\s+/).length;
+      writersRef
+        .add({
+          id: user.uid,
+          date: new Date(),
+          time: totalTime,
+          words: wordCount,
+          novelName: chapterTitle,
+          data: editorState,
+          contributors: [user.uid],
+        })
+        .then((docRef) => {
+          const novelsRef = db.collection("novels");
+          novelsRef
+            .add({
+              id: docRef.id,
+              date: new Date(),
+              time: totalTime,
+              words: wordCount,
+              data: editorState,
+              novelName: chapterTitle,
+              contributors: [user.uid],
+              author: user.uid,
+            })
+            .then(() => {
+              console.log("Novel added successfully");
+              setTimer(0);
+              setTime(0);
+              setChapterTitle("");
+              setEditorState("");
+              setLoading(false);
+            })
+            .catch((error) => {
+              console.log(error);
+              setLoading(false);
+            });
+        })
+        .catch((error) => {
+          setLoading(false);
+          console.log(error);
+        });
+    }
   }
 
   const handleDownload = (html) => {
