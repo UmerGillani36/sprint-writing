@@ -44,7 +44,7 @@ const Share = (props) => {
       const novels = [];
       const querySnapshot = await getDocs(collection(db, "novels"));
       querySnapshot.forEach((doc) => {
-        novels.push({ id: doc.id, ...doc.data() });
+        novels.push({ ...doc.data(), id: doc.id });
       });
       setNovels(novels);
     }
@@ -57,6 +57,7 @@ const Share = (props) => {
       });
       setFriends(friends);
     }
+    getNovels();
     getFriends();
   }, []);
   const handleNovels = (event) => {
@@ -65,7 +66,66 @@ const Share = (props) => {
   const handleFriends = (event) => {
     setSelectedFriend(event.target.value);
   };
-  const addContributor = () => {};
+
+  async function editNovel(novelId, newData) {
+    try {
+      const novelRef = firebase.firestore().collection("novels").doc(novelId);
+      const snapshot = await novelRef.get();
+
+      if (!snapshot.exists) {
+        throw new Error("Novel does not exist!");
+      }
+
+      await novelRef.update(newData);
+      return "Novel successfully updated!";
+    } catch (error) {
+      throw error;
+    }
+  }
+  console.log("Selected Friend: ", selectedFriend);
+  console.log("Selected Novel: ", selectedNovel);
+  const addContributor = () => {
+    if (selectedNovel !== "none") {
+      if (selectedFriend !== "none") {
+        let obj = {};
+        let user = false;
+        novels.forEach((value) => {
+          if (
+            value.id === selectedNovel &&
+            !value?.contributors?.includes(selectedFriend)
+          ) {
+            console.log("True True");
+            obj = {
+              ...value,
+              contributors: [...value?.contributors, selectedFriend],
+            };
+            user = true;
+            return 1;
+          } else {
+            user = false;
+          }
+        });
+        if (user) {
+          editNovel(selectedNovel, obj)
+            .then((message) => {
+              console.log(message);
+              setSelectedNovel("none");
+              setSelectedFriend("none");
+              return;
+            })
+            .catch((error) => {
+              console.error(error);
+            });
+        } else {
+          alert("User already exist in selected novel");
+        }
+      } else {
+        alert("Please Select a friend you want to add in the novel");
+      }
+    } else {
+      alert("Please Select a novel in order to add someone as a contributor");
+    }
+  };
   return (
     <>
       {user ? (
@@ -110,9 +170,7 @@ const Share = (props) => {
                   </MenuItem>
                   {novels &&
                     novels.map((novel) => (
-                      <MenuItem value={novel.novelName}>
-                        {novel.novelName}
-                      </MenuItem>
+                      <MenuItem value={novel.id}>{novel.novelName}</MenuItem>
                     ))}
                 </Select>
                 <Select
@@ -128,7 +186,7 @@ const Share = (props) => {
                   </MenuItem>
                   {friends &&
                     friends.map((friend) => (
-                      <MenuItem value={friend.name}>{friend.name}</MenuItem>
+                      <MenuItem value={friend.id}>{friend.name}</MenuItem>
                     ))}
                 </Select>
               </div>
