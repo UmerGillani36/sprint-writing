@@ -59,6 +59,7 @@ const Share = (props) => {
     }
     getNovels();
     getFriends();
+    getNovels();
   }, []);
   const handleNovels = (event) => {
     setSelectedNovel(event.target.value);
